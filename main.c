@@ -26,8 +26,6 @@ unsigned char direction, old_direction;
 unsigned char addr_to_write;
 
 void main() {	
-	unsigned short i;
-
 	addr_to_write = 0;
 	x_pos = 64 << 4;
 	y_pos = 64 << 4;
