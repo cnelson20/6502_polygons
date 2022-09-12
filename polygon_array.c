@@ -287,15 +287,9 @@ void rotate_z_array(struct dyn_array_short *s, struct dyn_array_short *d, unsign
 		dest->array[i].color_buffer = src->array[i].color_buffer;
 		
 		/* Y1 = Sin(t)X0 + Cos(t)Y0 */
-		//multiply_word1 = src->array[i].val;
-		//multiply_word2 = sin;
 		temp1.val = ((unsigned long)src->array[i].val * sin >> 10);
-		//temp1.val = multiply_divide_1024();
 		temp1.sign = sin_sign ^ src->array[i].sign;
-		//multiply_word1 = src->array[i + 1].val;
-		//multiply_word2 = cos;
 		temp2.val = ((unsigned long)src->array[i + 1].val * cos >> 10);
-		//temp2.val = multiply_divide_1024();
 		temp2.sign = cos_sign ^ src->array[i + 1].sign;
 		
 		if (temp1.sign == temp2.sign) {
