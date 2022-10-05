@@ -18,13 +18,19 @@ unsigned char old_keyboard_input[2];
 void main() {	
 	setup_dyn_array(&polygons);
 
-	add_point(&polygons, 2, 0x1000, 1, 0x1000, 1, 0, 0);
-	add_point(&polygons, 0, 0x0000, 0, 0x0A00, 1, 0, 0);
-	add_point(&polygons, 0, 0x0000, 0, 0x1000, 0, 0, 0);
+	/*
+	add_point(&polygons, 2, 0x1000, 1, 0x1000, 1, 0x0000, 0);
+	add_point(&polygons, 0, 0x0000, 0, 0x0A00, 1, 0x0000, 0);
+	add_point(&polygons, 0, 0x0000, 0, 0x1000, 0, 0x0000, 0);
+	*/
 	
-	add_point(&polygons, 4, 0x1000, 0, 0x1000, 1, 0, 0);
-	add_point(&polygons, 0, 0x0000, 0, 0x0A00, 1, 0, 0);
-	add_point(&polygons, 0, 0x0000, 0, 0x1000, 0, 0, 0);	
+	add_point(&polygons, 2, 0x1000, 1, 0x1000, 1, 0x0000, 0);	
+	add_point(&polygons, 0, 0x0000, 0, 0x1000, 0, 0x0000, 0);
+	add_point(&polygons, 0, 0x0000, 0, 0x0A00, 1, 0x0000, 0);
+	
+	add_point(&polygons, 4, 0x1000, 0, 0x1000, 1, 0x0000, 0);
+	add_point(&polygons, 0, 0x0000, 0, 0x0A00, 1, 0x0000, 0);
+	add_point(&polygons, 0, 0x0000, 0, 0x1000, 0, 0x0000, 0);	
 
 	/* Enable bitmap */
 	POKE(0x9F34, 7);
@@ -39,8 +45,8 @@ void main() {
 	POKE(0x9F22, 0x10);
 	set_vram(0, 76800);
 		
-	scale_move_array(&polygons, 1, 0x8000);
-	mergesort_polygons(&polygons);
+	scale_move_array(&polygons, 0x280, 0x8000);
+	//mergesort_polygons(&polygons);
 	draw_polygons_array(&polygons);
 	
 	while (1) {};

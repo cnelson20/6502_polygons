@@ -9,9 +9,7 @@
 unsigned short sin_table[] = {0, 89, 178, 265, 350, 433, 512, 587, 658, 724, 784, 839, 887, 928, 962, 989, 1008, 1020, 1024};
 
 void draw_polygons_array(struct dyn_array_short *p) {
-	register struct signed_short *polygons_array = p->array;
 	unsigned short real_len = p->length << 2;
-	
 	unsigned short i;
 	
 	for (i = 0; i < real_len; i += 12) {
@@ -52,26 +50,28 @@ void scale_move_array(struct dyn_array_short *p, unsigned short scalefactor, uns
 	
 	for (i = 0; i < lenx2; i += 4) {
 		/* X */
+		p->array[i].val = ((long)p->array[i].val * (long)scalefactor) >> 8;
 		if (p->array[i].sign) {
-			if (p->array[i].val * scalefactor < movefactor) {
-				p->array[i].val = movefactor - p->array[i].val * scalefactor;
+			if (p->array[i].val < movefactor) {
+				p->array[i].val = movefactor - p->array[i].val;
 			} else {
 				p->array[i].val = 0;
 			}
 			p->array[i].sign = 0;
 		} else {
-			p->array[i].val = movefactor + p->array[i].val * scalefactor;
+			p->array[i].val += movefactor;
 		}
 		/* Y */
+		p->array[i + 1].val = ((long)p->array[i + 1].val * (long)scalefactor) >> 8;
 		if (p->array[i + 1].sign) {
-			if (p->array[i + 1].val * scalefactor < movefactor) {
-				p->array[i + 1].val = movefactor - p->array[i + 1].val * scalefactor;
+			if (p->array[i + 1].val < movefactor) {
+				p->array[i + 1].val = movefactor - p->array[i + 1].val;
 			} else {
 				p->array[i + 1].val = 0;
 			}
 			p->array[i + 1].sign = 0;
 		} else {
-			p->array[i + 1].val = movefactor + p->array[i + 1].val * scalefactor;
+			p->array[i + 1].val += movefactor;
 		}		
 		if (p->array[i + 2].sign) {
 			p->array[i + 2].val = 0x8000 - p->array[i + 2].val;
@@ -82,7 +82,7 @@ void scale_move_array(struct dyn_array_short *p, unsigned short scalefactor, uns
 	}
 }
 
-void draw_polygon_wrapper(struct signed_short *polygons, unsigned short index) {
+/*void draw_polygon_wrapper(struct signed_short *polygons, unsigned short index) {
 	unsigned short i;
 	struct signed_short temp;
 	unsigned short min_index = index;
@@ -124,7 +124,7 @@ void draw_polygon_wrapper(struct signed_short *polygons, unsigned short index) {
 	draw_polygon();
 	
 	return;
-}
+}//*/
 
 struct dyn_array_short *src;
 struct dyn_array_short *dest;
