@@ -12,4 +12,4 @@ extern unsigned short draw_polygon_bottom_y;
 
 void draw_polygon();
 
-void __fastcall__ set_vram(unsigned char color, unsigned short bytes);
+void __fastcall__ set_vram(unsigned char color, unsigned long bytes);

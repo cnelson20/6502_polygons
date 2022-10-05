@@ -1,7 +1,5 @@
 RDTIM = $FFDE
 
-.importzp ptr1
-
 .export _waitforjiffy
 _waitforjiffy:
 

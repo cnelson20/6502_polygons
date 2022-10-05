@@ -10,7 +10,7 @@ struct dyn_array_short {
 	unsigned short length;
 };
 
-void draw_polygons_array(struct dyn_array_short *p, unsigned char addr);
+void draw_polygons_array(struct dyn_array_short *p);
 
 void setup_dyn_array(struct dyn_array_short *p);
 void add_point(struct dyn_array_short *p, unsigned char c, unsigned short x0, unsigned char xsign, 

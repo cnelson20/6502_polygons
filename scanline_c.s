@@ -44,10 +44,6 @@
 .endmacro
 
 
-.export _draw_polygon_addr
-_draw_polygon_addr:
-	.word 0
-	
 .export _draw_polygon_color	
 _draw_polygon_color:
 	.byte 0
@@ -76,6 +72,13 @@ _draw_polygon_bottom_x:
 _draw_polygon_bottom_y:
 	.word 0
 	
+
+.importzp tmp1, tmp2, tmp3, tmp4, ptr1, ptr2, ptr3, ptr4
+.importzp regsave
+
+;
+; void draw_polygon();
+;	
 .export _draw_polygon
 _draw_polygon:
 	jmp @func_start
@@ -85,24 +88,17 @@ _draw_polygon:
 	.byte 0
 @ymax:
 	.byte 0
-@x0:
-	.word 0
-@x1:
-	.word 0
-@dx0:
-	.word 0
-@dx0_direction:
+@x0 = ptr4
+@x1 = sreg
+
+@dx0 = ptr1
+@dx0_direction = tmp1
+@dx1 = ptr2
+@dx1_direction = tmp2
+@dx1_1 = ptr3
+@dx1_1_direction = tmp3
 	.byte 0
-@dx1:
-	.word 0
-@dx1_direction:
-	.byte 0
-@dx1_1:
-	.word 0
-@dx1_1_direction:
-	.byte 0
-@y_curr:
-	.byte 0
+@y_curr = regsave
 
 @divisor_temp:
 	.word 0
@@ -121,6 +117,7 @@ _draw_polygon:
 	sta @y_curr
 	sta @ymin
 	
+	stz draw_horiz_setup
 	
 	; Calculate dx0
 	lda _draw_polygon_bottom_x + 1
@@ -401,6 +398,13 @@ _draw_polygon:
 	jmp @loop
 @func_end:
 	rts 
+
+draw_horiz_setup:
+	.byte 0
+horiz_y_addr:
+	.res 3, 0
+	
+.import _waitforjiffy	
 	
 draw_horiz:
 	sta @f_y
@@ -418,36 +422,44 @@ draw_horiz:
 	:
 	stx @f_x0
 	
-	lda @f_x1
-	cmp #64
-	bcc :+
-	lda #63
-	sta @f_x1
+	lda draw_horiz_setup
+	beq :+
+	bra @draw_line
 	:
 	
-	lda #$11
+	stz $9F20 
+	stz $9F21
+	lda #$E0
 	sta $9F22
+	ldy @f_y
+	beq :++
+	:
+	lda $9F23	
+	dey 
+	bne :-
+	:
+	lda $9F20 
+	sta horiz_y_addr
+	lda $9F21
+	sta horiz_y_addr + 1
+	lda $9F22 
+	and #1
+	sta horiz_y_addr + 2
 
-	lda @f_y
-	lsr 
-	lsr 
-	clc 
-	adc _draw_polygon_addr+1
-	sta $9F21
-	
-	lda @f_y
-	asl
-	asl 
-	asl 
-	asl 
-	asl
-	asl
+@draw_line:	
+	lda horiz_y_addr
 	clc 
 	adc @f_x0
-
 	sta $9F20
-
-
+	lda horiz_y_addr + 1
+	adc #0
+	sta $9F21
+	lda horiz_y_addr + 2
+	adc #0
+	and #$0F
+	ora #$10
+	sta $9F22
+	
 	ldy @f_x0
 	lda _draw_polygon_color
 @loop:
@@ -456,8 +468,20 @@ draw_horiz:
 	iny 
 	cpy @f_x1
 	bcs @end
+	
 	bra @loop
 @end:
+	lda horiz_y_addr
+	clc 
+	adc #<320
+	sta horiz_y_addr
+	lda horiz_y_addr + 1
+	adc #>320
+	sta horiz_y_addr + 1
+	lda horiz_y_addr + 2
+	adc #0
+	sta horiz_y_addr + 2
+
 	rts
 @f_y:
 	.byte 0
@@ -467,21 +491,25 @@ draw_horiz:
 	.byte 0
 
 
-.importzp sp 
+.importzp sp, sreg 
 .import popa
 
 .export _set_vram
 _set_vram:
 	tay 
-
+	
 	lda (sp)
 
+	inc sreg
+	
 	:
 	sta $9F23
 	dey
 	bne :-
 	dex
 	bne :-
-
+	dec sreg
+	bne :-
+	
 	jsr popa
 	rts

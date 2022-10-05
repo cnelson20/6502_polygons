@@ -8,13 +8,11 @@
 
 unsigned short sin_table[] = {0, 89, 178, 265, 350, 433, 512, 587, 658, 724, 784, 839, 887, 928, 962, 989, 1008, 1020, 1024};
 
-void draw_polygons_array(struct dyn_array_short *p, unsigned char addr) {
+void draw_polygons_array(struct dyn_array_short *p) {
 	register struct signed_short *polygons_array = p->array;
 	unsigned short real_len = p->length << 2;
 	
 	unsigned short i;
-	
-	draw_polygon_addr = addr << 8;
 	
 	for (i = 0; i < real_len; i += 12) {
 		draw_polygon_wrapper(p->array, i);
@@ -44,6 +42,7 @@ void add_point(struct dyn_array_short *p, unsigned char c, unsigned short x0, un
 	s.val = z0;
 	s.sign = zsign;
 	p->array[p->length * 4 + 2] = s;
+	
 	++p->length;
 }
 
@@ -87,7 +86,7 @@ void draw_polygon_wrapper(struct signed_short *polygons, unsigned short index) {
 	unsigned short i;
 	struct signed_short temp;
 	unsigned short min_index = index;
-	
+		
 	draw_polygon_color = polygons[index].color_buffer;
 	
 	min_index = index;
