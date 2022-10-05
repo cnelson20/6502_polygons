@@ -74,7 +74,7 @@ _draw_polygon_bottom_y:
 	
 
 .importzp tmp1, tmp2, tmp3, tmp4, ptr1, ptr2, ptr3, ptr4
-.importzp regsave
+.importzp regsave, sreg
 
 ;
 ; void draw_polygon();
@@ -490,26 +490,3 @@ draw_horiz:
 @f_x1:
 	.byte 0
 
-
-.importzp sp, sreg 
-.import popa
-
-.export _set_vram
-_set_vram:
-	tay 
-	
-	lda (sp)
-
-	inc sreg
-	
-	:
-	sta $9F23
-	dey
-	bne :-
-	dex
-	bne :-
-	dec sreg
-	bne :-
-	
-	jsr popa
-	rts

@@ -219,9 +219,36 @@ _draw_polygon_wrapper:
 	jsr _draw_polygon
 
 	rts 
-@index = $02
+@index:
 	.word 0
 @min_index:
 	.byte 0
 @temp:
 	.res 8
+	
+
+.importzp sp, sreg 
+.import popa
+
+;
+; void __fastcall__ set_vram(unsigned char color, unsigned long bytes);
+;
+.export _set_vram
+_set_vram:
+	tay 
+	
+	lda (sp)
+
+	inc sreg
+	
+	:
+	sta $9F23
+	dey
+	bne :-
+	dex
+	bne :-
+	dec sreg
+	bne :-
+	
+	jsr popa
+	rts

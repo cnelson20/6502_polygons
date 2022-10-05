@@ -1,3 +1,6 @@
+#ifndef _POLYGON_ARRAY_H
+#define _POLYGON_ARRAY_H
+
 struct signed_short {
 	unsigned short val;
 	unsigned char sign;
@@ -23,3 +26,5 @@ void mergesort_helper(struct signed_short *from, struct signed_short *to, unsign
 void scale_move_array(struct dyn_array_short *p, unsigned short scalefactor, unsigned short movefactor);
 
 void rotate_z_array(struct dyn_array_short *s, struct dyn_array_short *d, unsigned char adv5);
+
+#endif

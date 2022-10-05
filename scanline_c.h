@@ -1,3 +1,6 @@
+#ifndef _SCANLINE_H
+#define _SCANLINE_H
+
 extern unsigned short draw_polygon_addr;
 extern unsigned char draw_polygon_color;
 
@@ -12,4 +15,4 @@ extern unsigned short draw_polygon_bottom_y;
 
 void draw_polygon();
 
-void __fastcall__ set_vram(unsigned char color, unsigned long bytes);
+#endif

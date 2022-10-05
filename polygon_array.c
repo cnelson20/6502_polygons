@@ -1,5 +1,6 @@
 #include "scanline_c.h"
 #include "polygon_array.h"
+#include "polygon_helpers.h"
 #include "multiply.h"
 #include <peekpoke.h>
 #include <stdio.h>

@@ -7,6 +7,7 @@
 #include "scanline_c.h"
 #include "main.h"
 #include "polygon_array.h"
+#include "polygon_helpers.h"
 #include "waitforjiffy.h"
 
 struct dyn_array_short polygons, temppolygons;
