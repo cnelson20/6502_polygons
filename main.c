@@ -26,11 +26,9 @@ void main() {
 	add_point(&polygons, 2, 0x1000, 1, 0x1000, 1, 0x0000, 0);	
 	add_point(&polygons, 0, 0x0000, 0, 0x1000, 0, 0x0000, 0);
 	add_point(&polygons, 0, 0x0000, 0, 0x0A00, 1, 0x0000, 0);
-	
-	/*add_point(&polygons, 4, 0x1000, 0, 0x1000, 1, 0x0000, 0);
+	add_point(&polygons, 4, 0x1000, 0, 0x1000, 1, 0x0000, 0);
 	add_point(&polygons, 0, 0x0000, 0, 0x0A00, 1, 0x0000, 0);
 	add_point(&polygons, 0, 0x0000, 0, 0x1000, 0, 0x0000, 0);	
-	*/
 
 	/* Enable bitmap */
 	POKE(0x9F34, 7);
@@ -48,13 +46,8 @@ void main() {
 	i = 0;
 	while (1) {
 	int j;
-	POKEW(0x9F20, 20480); 
-	POKE(0x9F22, 0x10);
-	//set_vram(0, 30000);
 	rotate_z_array(&polygons, &temppolygons, i);
 	scale_move_array(&temppolygons, 0x280, 0x8000);
-	draw_polygons_array(&temppolygons);
-	waitforjiffy();
 	
 	for (j = 0; j < polygons.length * 4; ++j) {
 		POKEW(0x8000 + j * 4, polygons.array[j].val);
@@ -65,10 +58,23 @@ void main() {
 		POKEW(0x8040 + j * 4, temppolygons.array[j].val);
 		POKEW(0x8040 + j * 4 + 2, temppolygons.array[j].sign);
 		POKEW(0x8040 + j * 4 + 3, temppolygons.array[j].color_buffer);
+	}	
+	
+	draw_polygons_array(&temppolygons);
+	waitforjiffy();
+	
+	while (1) {
+		__asm__ ("jsr $FFE4");
+		__asm__ ("cmp #$20");
+		__asm__ ("bne %g", label);
+		POKE(0x9F20, 0);
+		POKE(0x9F21, 0);
+		POKE(0x9F22, 0x10);
+		break;
+		label:
+		;
 	}
 	
-	//__asm__ ("stp");
-	POKEW(0x2, polygons.length);
 	++i;
 	if (i >= 72) { i = 0; }
 	}

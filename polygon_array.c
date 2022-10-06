@@ -83,7 +83,7 @@ void scale_move_array(struct dyn_array_short *p, unsigned short scalefactor, uns
 	}
 }
 
-void __draw_polygon_wrapper(struct signed_short *polygons, unsigned short index) {
+void draw_polygon_wrapper(struct signed_short *polygons, unsigned short index) {
 	unsigned short i;
 	struct signed_short temp;
 	unsigned short min_index = index;
