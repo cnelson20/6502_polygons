@@ -211,6 +211,7 @@ _draw_polygon_wrapper:
 	lda (ptr1), Y
 	sta _draw_polygon_top_y + 1
 	
+	;stp
 	;bra :+
 	;lda _draw_polygon_top_x
 	;lda _draw_polygon_middle_x

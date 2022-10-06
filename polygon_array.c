@@ -83,7 +83,7 @@ void scale_move_array(struct dyn_array_short *p, unsigned short scalefactor, uns
 	}
 }
 
-/*void draw_polygon_wrapper(struct signed_short *polygons, unsigned short index) {
+void __draw_polygon_wrapper(struct signed_short *polygons, unsigned short index) {
 	unsigned short i;
 	struct signed_short temp;
 	unsigned short min_index = index;
@@ -213,7 +213,7 @@ struct signed_short temp1, temp2;
 
 */
 void rotate_z_array(struct dyn_array_short *s, struct dyn_array_short *d, unsigned char adv5) {
-	unsigned short i, array_real_len;
+	static short i, array_real_len;
 
 	src = s;
 	dest = d;
@@ -241,24 +241,12 @@ void rotate_z_array(struct dyn_array_short *s, struct dyn_array_short *d, unsign
 			cos_sign = 0;
 		}
 	}
+	POKE(0x9000, anglediv5);
+	POKE(0x9001, sin_sign);
+	POKE(0x9002, cos_sign);
 	
-	__asm__ ("lda %v", anglediv5);
-	__asm__ ("asl A");
-	__asm__ ("tax");
-	__asm__ ("lda %v, X", sin_table);
-	__asm__ ("sta %v", sin);
-	__asm__ ("lda %v + 1, X", sin_table);
-	__asm__ ("sta %v + 1", sin);
-
-	__asm__ ("stx %v", cos);
-	__asm__ ("lda #18 * 2");
-	__asm__ ("sec");
-	__asm__ ("sbc %v", cos);
-	__asm__ ("tax");
-	__asm__ ("lda %v, X", sin_table);
-	__asm__ ("sta %v", cos);
-	__asm__ ("lda %v + 1, X", sin_table);
-	__asm__ ("sta %v + 1", cos);
+	sin = sin_table[anglediv5];
+	cos = sin_table[18 - anglediv5];
 	
 	if (dest->length != src->length) {
 		dest->length = src->length;
