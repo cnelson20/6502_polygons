@@ -45,38 +45,38 @@ void main() {
 		
 	i = 0;
 	while (1) {
-	int j;
-	rotate_z_array(&polygons, &temppolygons, i);
-	scale_move_array(&temppolygons, 0x280, 0x8000);
-	
-	for (j = 0; j < polygons.length * 4; ++j) {
-		POKEW(0x8000 + j * 4, polygons.array[j].val);
-		POKEW(0x8000 + j * 4 + 2, polygons.array[j].sign);
-		POKEW(0x8000 + j * 4 + 3, polygons.array[j].color_buffer);
-	}
-	for (j = 0; j < polygons.length * 4; ++j) {
-		POKEW(0x8040 + j * 4, temppolygons.array[j].val);
-		POKEW(0x8040 + j * 4 + 2, temppolygons.array[j].sign);
-		POKEW(0x8040 + j * 4 + 3, temppolygons.array[j].color_buffer);
-	}	
-	
-	draw_polygons_array(&temppolygons);
-	waitforjiffy();
-	
-	while (1) {
-		__asm__ ("jsr $FFE4");
-		__asm__ ("cmp #$20");
-		__asm__ ("bne %g", label);
-		POKE(0x9F20, 0);
-		POKE(0x9F21, 0);
-		POKE(0x9F22, 0x10);
-		break;
-		label:
-		;
-	}
-	
-	++i;
-	if (i >= 72) { i = 0; }
+		int j;
+		rotate_z_array(&polygons, &temppolygons, i);
+		scale_move_array(&temppolygons, 0x280, 0x8000);
+		
+		for (j = 0; j < polygons.length * 4; ++j) {
+			POKEW(0x8000 + j * 4, polygons.array[j].val);
+			POKEW(0x8000 + j * 4 + 2, polygons.array[j].sign);
+			POKEW(0x8000 + j * 4 + 3, polygons.array[j].color_buffer);
+		}
+		for (j = 0; j < polygons.length * 4; ++j) {
+			POKEW(0x8040 + j * 4, temppolygons.array[j].val);
+			POKEW(0x8040 + j * 4 + 2, temppolygons.array[j].sign);
+			POKEW(0x8040 + j * 4 + 3, temppolygons.array[j].color_buffer);
+		}	
+		
+		draw_polygons_array(&temppolygons);
+		waitforjiffy();
+		
+		while (1) {
+			__asm__ ("jsr $FFE4");
+			__asm__ ("cmp #$20");
+			//__asm__ ("bne %g", label);
+			POKE(0x9F20, 0);
+			POKE(0x9F21, 0);
+			POKE(0x9F22, 0x10);
+			break;
+			label:
+			;
+		}
+		
+		++i;
+		if (i >= 72) { i = 0; }
 	}
 	// $18 breaks 
 	// $3F starts again

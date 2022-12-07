@@ -10,8 +10,8 @@
 .macro round addr
 	lda addr
 	cmp #128
-	lda #0
-	adc addr+1
+	lda addr+1
+	adc #0	
 .endmacro
 
 
@@ -290,15 +290,6 @@ _draw_polygon:
 ; Main Loop
 ;	
 @loop:
-	;lda @y_curr
-	;jsr print_hex
-	;lda #$20
-	;jsr $FFD2
-	;printword @x0
-	;printword @x1
-	;lda #$0D
-	;jsr $FFD2
-
 	lda @y_curr
 	cmp @ymax
 	bcc :+
@@ -378,7 +369,7 @@ _draw_polygon:
 	
 	cpx @ymax
 	bne :+
-	
+	;  y_curr == ymax
 	round @x0
 	tax
 	round @x1
@@ -407,6 +398,9 @@ horiz_y_addr:
 .import _waitforjiffy	
 	
 draw_horiz:
+@f_y := $02
+@f_x0 := $03
+@f_x1 := $04
 	sta @f_y
 	sty @f_x1
 	cpx @f_x1
@@ -423,13 +417,23 @@ draw_horiz:
 	stx @f_x0
 	
 	lda draw_horiz_setup
-	beq :+
-	bra @draw_line
+	beq :+	
+	
+	lda horiz_y_addr
+	sta $9F20 
+	lda horiz_y_addr + 1
+	sta $9F21
+	lda horiz_y_addr + 2
+	ora #$E0
+	sta $9F22
+	
+	bra @increment_vera_ptr
 	:
 	
 	stz $9F20 
 	stz $9F21
 	lda #$E0
+	sta draw_horiz_setup ; now will be setup
 	sta $9F22
 	ldy @f_y
 	beq :++
@@ -438,6 +442,10 @@ draw_horiz:
 	dey 
 	bne :-
 	:
+@increment_vera_ptr:
+	; increment one more time ;
+	lda $9F23 ; add 320 more ;
+	
 	lda $9F20 
 	sta horiz_y_addr
 	lda $9F21
@@ -445,48 +453,36 @@ draw_horiz:
 	lda $9F22 
 	and #1
 	sta horiz_y_addr + 2
-
+	
+	and #1
+	ora #$E8
+	sta $9F22
+	lda $9F23 ; decrease back to right value
+	
 @draw_line:	
-	lda horiz_y_addr
-	clc 
+	lda $9F20
 	adc @f_x0
 	sta $9F20
-	lda horiz_y_addr + 1
+	lda $9F21 
 	adc #0
 	sta $9F21
-	lda horiz_y_addr + 2
+	lda $9F22
 	adc #0
-	and #$0F
+	and #1
 	ora #$10
 	sta $9F22
 	
-	ldy @f_x0
-	lda _draw_polygon_color
+	; TODO : Use Duff's device
+	; to speed up execution of loop
+	lda @f_x1
+	sec
+	sbc @f_x0
+	beq @end
+	ldx _draw_polygon_color
 @loop:
-	sta $9F23
+	stx $9F23
 
-	iny 
-	cpy @f_x1
-	bcs @end
-	
-	bra @loop
+	dec A
+	bne @loop
 @end:
-	lda horiz_y_addr
-	clc 
-	adc #<320
-	sta horiz_y_addr
-	lda horiz_y_addr + 1
-	adc #>320
-	sta horiz_y_addr + 1
-	lda horiz_y_addr + 2
-	adc #0
-	sta horiz_y_addr + 2
-
 	rts
-@f_y:
-	.byte 0
-@f_x0:
-	.byte 0
-@f_x1:
-	.byte 0
-
