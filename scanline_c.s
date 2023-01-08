@@ -407,18 +407,19 @@ draw_horiz:
 	bcc :+
 	beq :+
 	
-	txa
-	tay
-	ldx @f_x1
-	lda @f_y
-	jmp draw_horiz
+	
+	sty @f_x0
+	stx @f_x1
+	bra :++
 	
 	:
 	stx @f_x0
+	:
 	
 	lda draw_horiz_setup
 	beq :+	
 	
+	clc
 	lda horiz_y_addr
 	sta $9F20 
 	adc #<320
