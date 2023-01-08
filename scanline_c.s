@@ -390,10 +390,10 @@ _draw_polygon:
 @func_end:
 	rts 
 
-draw_horiz_setup:
-	.byte 0
-horiz_y_addr:
-	.res 3, 0
+draw_horiz_setup := $05
+	;.byte 0
+horiz_y_addr := $06
+	;.res 3, 0
 	
 .import _waitforjiffy	
 	
@@ -421,13 +421,18 @@ draw_horiz:
 	
 	lda horiz_y_addr
 	sta $9F20 
+	adc #<320
+	sta horiz_y_addr
 	lda horiz_y_addr + 1
 	sta $9F21
+	adc #>320
+	sta horiz_y_addr + 1
 	lda horiz_y_addr + 2
-	ora #$E0
 	sta $9F22
+	adc #0
+	sta horiz_y_addr + 2
 	
-	bra @increment_vera_ptr
+	bra @draw_line
 	:
 	
 	stz $9F20 
@@ -454,7 +459,7 @@ draw_horiz:
 	and #1
 	sta horiz_y_addr + 2
 	
-	and #1
+	;and #1
 	ora #$E8
 	sta $9F22
 	lda $9F23 ; decrease back to right value
@@ -478,11 +483,39 @@ draw_horiz:
 	sec
 	sbc @f_x0
 	beq @end
-	ldx _draw_polygon_color
+	tay
+	and #%111
+	asl
+	tax
+	
+	tya
+	lsr
+	lsr 
+	lsr
+	inc A
+	
+	ldy _draw_polygon_color
+	jmp (@dufftable, X)
 @loop:
-	stx $9F23
-
+	sty $9F23
+@jt7:
+	sty $9F23
+@jt6:
+	sty $9F23
+@jt5:
+	sty $9F23
+@jt4:
+	sty $9F23
+@jt3:
+	sty $9F23
+@jt2:
+	sty $9F23
+@jt1:
+	sty $9F23
+@jt0:
 	dec A
 	bne @loop
 @end:
 	rts
+@dufftable:
+	.word @jt0, @jt1, @jt2, @jt3, @jt4, @jt5, @jt6, @jt7
