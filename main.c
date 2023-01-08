@@ -71,8 +71,6 @@ void main() {
 			POKE(0x9F21, 0);
 			POKE(0x9F22, 0x10);
 			break;
-			label:
-			;
 		}
 		
 		++i;
